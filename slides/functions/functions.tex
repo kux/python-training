@@ -1,0 +1,234 @@
+\documentclass{beamer}
+\usepackage{listings}
+\usepackage{comment}
+
+\begin{document}
+
+
+\begin{frame}[fragile]
+\frametitle{Functions and functional programming}
+Python is not a functional programming language, but
+it has a lot of features taken from functional
+programming languages:
+\begin{itemize}
+  \item closures
+  \item high order functions and decorators
+  \item generators
+  \item corutines
+  \item list comprehensions
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{But First... Let's define a function}
+
+\begin{lstlisting}[language=python]
+def add(x, y):
+    return x + y
+\end{lstlisting}
+\pause
+\begin{lstlisting}[language=python]
+s = add(x, y)
+print s
+\end{lstlisting}
+
+\pause
+\vspace{5 mm}
+That's it!!
+
+
+\pause
+\vspace{5 mm}
+Not actually... There are a couple of things to notice:
+\begin{itemize}
+  \item python is dynamic
+  \item parameters don't have a specified type
+  \item neither do we specify the return type
+\end{itemize}
+\begin{comment}
+  Don't forget to add that any types that support the + 
+  operator are acceptable
+\end{comment}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Evaluation Strategy}
+
+\begin{itemize}
+  \item parameters are just names that point to objects
+  \item if you pass an immutable object, it looks as if it was passed by value
+\pause
+\begin{lstlisting}[language=python]
+def increment_value(x):
+    x = x + 1
+    print x  # Outputs: 4
+
+a = 3
+increment_value(y)
+print a  # Outputs: 3 
+\end{lstlisting}
+  \item Oups... It didn't actually work...
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Evaluation Strategy}
+
+\begin{itemize}
+  \item parameters are just names that point to objects
+  \item if you pass a mutable object and that object is modified, the changes are going
+    to be visible in the caller
+\end{itemize}
+\pause
+\begin{lstlisting}[language=python]
+def increment_values(values):
+    for i, v in enumerate(values):
+       values[i] = v + 1
+
+a = [1, 2, 3]
+increment_values(a)
+print a  # Outputs: [2, 3, 4]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation Stragegy}
+
+Functions that mutate their input arguments are:
+
+\begin{itemize}
+  \item said to have {\bf side effects}
+  \item are best avoided as they might lead to to subtle bugs
+  \item are needed for doing {\bf in-place} changes to large or expensive objects
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Evaluation Strategy}
+
+\begin{itemize}
+  \item this is named {\bf call by sharing}
+  \item it's the same as in languages such as Java or Ruby
+  \item though Java people name it pass-by-value
+  \item while Ruby people name it pass-by-reference
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Exercises}
+
+\begin{enumerate}
+  \item write a function that takes a list of integers and returns the number of even numbers containd in the list
+  \item write a function that takes a list of integers and returns a new list containing the even numbers from the list
+  \item write a function that takes a list of integers and {\bf in-place} removes the odd elements
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Default parameter values}
+
+\begin{lstlisting}[language=python]
+def increment(x, inc=1):
+   return x + inc
+
+a = 3
+increment(a)  # returns: 4
+increment(a, 2)  # returns: 6
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Default parameter values}
+
+\begin{itemize}
+  \item you can't have a non-default parameter following a default one. That raises {\bf SyntaxError}
+  \item default parameter values are are assigned at function definition and never change
+\end{itemize}
+
+\begin{lstlisting}[language=python]
+default = 1
+def foo(x=defualt)
+    print x
+
+default = 2
+foo()  # Outputs: 1
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Keyword arguments}
+
+\begin{lstlisting}[language=python]
+def make_symlink(target, link_name):
+    do stuff
+
+make_symlink(target='/foo', link_name='/bar')
+\end{lstlisting}
+\pause
+\begin{lstlisting}[language=python]
+make_symlink(link_name='/bar', target='/foo')
+\end{lstlisting}
+\pause
+\begin{lstlisting}[language=python]
+make_symlink('/foo', link_name='/bar')
+\end{lstlisting}
+\pause
+\begin{lstlisting}[language=python]
+make_symlink(target='foo', '/bar')  # SyntaxError !!
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Varargs functions}
+
+\begin{lstlisting}[language=python]
+
+def make_window(parent, *args, **kwargs):
+    print container
+    print args     
+    print kwargs   
+                   
+                   
+
+make_window(1, 2, 3, 4, 5,
+   color='red',
+   modal=False,
+   visible=True)
+
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Varargs functions}
+
+\begin{lstlisting}[language=python]
+
+def make_window(parent, *args, **kwargs):
+    print container  # Outputs: 1
+    print args       # Outputs: (2, 3, 4, 5)
+    print kwargs     # Outputs: {'color': 'red', 
+                     #           'modal': False,
+                     #           'visible': True}
+
+make_window(1, 2, 3, 4, 5,
+   color='red',
+   modal=False,
+   visible=True)
+
+\end{lstlisting}
+\end{frame}
+
+
+\end{document}
+
