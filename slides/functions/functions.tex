@@ -86,12 +86,12 @@ print a  # Outputs: 3
 \end{itemize}
 \pause
 \begin{lstlisting}[language=python]
-def increment_values(values):
+def increment(values):
     for i, v in enumerate(values):
        values[i] = v + 1
 
 a = [1, 2, 3]
-increment_values(a)
+increment(a)
 print a  # Outputs: [2, 3, 4]
 \end{lstlisting}
 \end{frame}
@@ -132,6 +132,53 @@ Functions that mutate their input arguments are:
 \end{enumerate}
 
 \end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Exercise 3. Take 1}
+
+\begin{lstlisting}[language=python]
+def remove_odd(values):
+    for val in values:
+        if val % 2 != 0:
+            values.remove(val)
+
+a = [1, 1, 1, 2, 4]
+remove_odd(a)  # list will be [1, 2, 4]
+\end{lstlisting}
+\vspace{5 mm}
+Never add/remove elements while iterating!!
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Exercise 3. Take 2}
+\begin{lstlisting}[language=python]
+import copy
+
+def remove_odd(values):
+    for val in copy.copy(values):
+        if val % 2 != 0:
+            values.remove(val)
+
+a = [1, 1, 1, 2]
+remove_odd(a)  # list will correctly be [2, 4]
+\end{lstlisting}
+\vspace{5 mm}
+This works, but the algorithm is O(n^2)
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Exercise 3. Take 3}
+\begin{lstlisting}[language=python]
+def remove_odd(values):
+    values[:] = [v for v in values if v % 2 == 0]
+
+a = [1, 1, 1, 2]
+remove_odd(a)  # list will correctly be [2, 4]
+\end{lstlisting}
+\end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{Default parameter values}
@@ -226,6 +273,55 @@ make_window(1, 2, 3, 4, 5,
    modal=False,
    visible=True)
 
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Variable scope}
+Python uses function scope:
+\begin{itemize}
+ \item each time a function executes a new local namespace is created
+ \item the local namespace contains parameters as well as variables defined inside the function
+\end{itemize}
+\vspace{5 mm}
+When resolving variables
+\begin{itemize}
+  \item the local namespace is searched
+  \item If no match is found, the global namespace is searched  
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Variable scope}
+\begin{lstlisting}[language=python]
+var = 10
+def foo():
+    var = 21
+foo()
+print var  # Outputs: 10
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Variable scope}
+\begin{lstlisting}[language=python]
+var = 10
+def foo():
+    global var
+    var = 21
+foo()
+print var  # Outputs: 21
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Nested functions}
+\begin{lstlisting}[language=python]
+def foo(x):
+    def bar(y):
+        
 \end{lstlisting}
 \end{frame}
 
