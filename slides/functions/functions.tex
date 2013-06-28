@@ -679,6 +679,7 @@ for ln in grep(grep(open('passwd'), 'foo'), 'bar'):
 \begin{lstlisting}[language=python]
 nums = [1, 2, 3, 4, 5]
 times_two = [x * 2 for x in nums]
+
 print times_two
 # Outputs:  [2, 4, 6, 8, 10]
 \end{lstlisting}
@@ -689,6 +690,7 @@ print times_two
 \begin{lstlisting}[language=python]
 nums = [1, 2, 3, 4, 5]
 times_two = [x * 2 for x in nums if x % 2 == 0]
+
 print times_two
 # Outputs:  [4, 8]
 \end{lstlisting}
@@ -699,13 +701,30 @@ print times_two
 \begin{lstlisting}[language=python]
 sentences = ['mama are mere', 'tata are pere']
 words = []
-for s in sentences:
-    for w in words:
+for sentence in sentences:
+    for w in sentence.split():
         words.append(w.upper())
 
 print words
+# Outputs: ['MAMA', 'ARE', 'MERE', 'TATA',
+            'ARE', 'PERE']
 
 \end{lstlisting}
 \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{List comprehensions}
+\begin{lstlisting}[language=python]
+sentences = ['mama are mere', 'tata are pere']
+
+words = [w.upper() for sentence in sentences
+                   for w in sentence.split()]
+
+print words
+# Outputs: ['MAMA', 'ARE', 'MERE', 'TATA',
+            'ARE', 'PERE']
+\end{lstlisting}
+\end{frame}
+
 
 \end{document}
