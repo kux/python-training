@@ -315,16 +315,395 @@ print var  # Outputs: 21
 \end{lstlisting}
 \end{frame}
 
-
 \begin{frame}[fragile]
 \frametitle{Nested functions}
 \begin{lstlisting}[language=python]
-def foo(x):
-    def bar(y):
-        
+def countdown(initial, msg):
+
+    def show_msg():
+        print '%s %d' % (msg, n)
+
+    for n in xrange(initial, 0, -1):
+        show_msg()
+
+countdown(2, 'at:')
+# Output:
+# at:2
+# at:1
+# at:0
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Functions as first class citizens}
+
+What this means:
+\begin{itemize}
+  \item functions can be passed as parameters
+  \item functions can be return values
+\end{itemize}
+\pause
+\begin{lstlisting}[language=python]
+def compare(x, y):
+    return cmp(x.lower(), y.lower())
+
+sorted(['B', 'c', 'a'], compare)
+# Returns ['a', 'B', 'c']
+\end{lstlisting}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Closures}
+A closure is a function that is packaged together with the surrounding environment
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Closure example}
+Closures can be used for delayed evaluation
+\vspace{5 mm}
+\begin{lstlisting}[language=python]
+from urllib import urlopen
+
+def page(url):
+    def get():
+        return urlopen(url).read()
+    return get
+
+python = page('http://python.org')
+jython = page('http://jython.org')
+
+pydata = python()  # Fetches http://python.org
+jydata = jython()  # Fetches http://jython.org
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{High order function example}
+High order functions are functions that do at least one of
+\begin{itemize}
+  \item take one or more functions as input
+  \item return a function
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{High order function example 1}
+\begin{lstlisting}[language=python]
+def logging_wrapper(func):
+    def wrapped():
+        print 'entering'
+        func()
+        print 'exiting'
+    return wrapped
+
+def foo():
+    print 'fooo'
+
+logged_foo = logging_wrapper(foo)
+logged_foo()
+# entering
+# fooo
+# exiting
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{High order function example 2}
+\begin{lstlisting}[language=python]
+def logging_wrapper(func):
+    def wrapped():
+        print 'entering'
+        func()
+        print 'exiting'
+    return wrapped
+
+def foo():
+    print 'fooo'
+
+foo = logging_wrapper(foo)
+foo()
+# entering
+# fooo
+# exiting
 \end{lstlisting}
 \end{frame}
 
 
-\end{document}
+\begin{frame}[fragile]
+\frametitle{Decorators (take 1)}
+\begin{lstlisting}[language=python]
+def logging_wrapper(func):
+    def wrapped():
+        print 'entering'
+        func()
+        print 'exiting'
+    return wrapped
 
+@logging_wrapper
+def foo():
+    print 'fooo'
+
+foo()
+# entering
+# fooo
+# exiting
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Decorators (take 2)}
+\begin{lstlisting}[language=python]
+def logging_wrapper(func):
+    def wrapped(*args, **kwargs):
+        print 'entering'
+        ret_val = func(*args, **kwargs)
+        print 'exiting'
+        return ret_val
+    return wrapped
+
+@logging_wrapper
+def foo(msg):
+    return 'fooo %s' % msg
+
+print foo('bar')
+# entering
+# exiting
+# fooo bar
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Exercise}
+Write a 'timing' decorator that wrapps a function and prints how long the function's execution takes
+
+\vspace{15 mm}
+{\bf Hint}: use the Timer class from the timeit module:
+\begin{lstlisting}[language=python]
+import timeit
+t = timeit.Timer()
+# do stuff
+logging.info(t.timeit())
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Generators}
+\begin{itemize}
+  \item a generator is a function that produces a sequence of values.
+  \item the sequence can be then consumed with a {\bf for} loop or by explicitly
+    calling {\bf next} on the returned generator object
+\end{itemize}
+\vspace{5 mm}
+\pause
+\begin{lstlisting}[language=python]
+def my_range(first, last):
+    i = first
+    while i < last:
+        yield i
+        i += 1
+
+for x in my_range(0, 3):
+   print x
+
+# Outputs: 0  1  2
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Generators}
+\begin{itemize}
+  \item a generator is a function that produces a sequence of values.
+  \item the sequence can be then consumed with a {\bf for} loop or by explicitly
+    calling {\bf next} on the returned generator object
+\end{itemize}
+\vspace{5 mm}
+\begin{lstlisting}[language=python]
+def my_range(first, last):
+    i = first
+    while i < last:
+        yield i
+        i += 1
+
+print sum(my_range(0, 3))  # Outputs: 4
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Generators}
+\begin{itemize}
+  \item a generator is a function that produces a sequence of values.
+  \item the sequence can be then consumed with a {\bf for} loop or by explicitly
+    calling {\bf next} on the returned generator object
+\end{itemize}
+\vspace{5 mm}
+\begin{lstlisting}[language=python]
+def my_range(first, last):
+    i = first
+    while i < last:
+        yield i
+        i += 1
+
+gen = my_range(0, 3)
+print gen.next()  # Outputs 0
+print gen.next()  # Outputs 1
+print gen.next()  # Outputs 2
+print gen.next()  # raised StopIteration !
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Generators}
+\vspace{5 mm}
+\begin{lstlisting}[language=python]
+def my_range(first, last):
+    i = first
+    while i < last:
+        yield i
+        i += 1
+
+gen = my_range(0, 3)
+while True:
+   try:
+      print gen.next()
+   except StopIteration:
+      break
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Endless generators}
+\vspace{5 mm}
+\begin{lstlisting}[language=python]
+import random
+
+def random_generator():
+    while True:
+        yield random.random()
+
+random_gen = random_generator()
+for rand_nr in random_gen:
+    print nr
+    if rand_nr > 0.5:
+        break
+random_gen.close()
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Exercises}
+\begin{enumerate}
+  \item Write a generator that takes an integer parameter and yields fibonacci numbers
+    smaller than the given argument.
+  \item Having a binary tree encoded as a tuple (label, left, right) write a generator that
+    yields the labels in pre-order (root, left, right). Write both an iterative and recursive
+    implementation.
+\end{enumerate}
+Example:
+\begin{lstlisting}[language=python]
+tree=  ('b',
+          ('a',
+             ('q', None, None),
+              None),
+          ('z',
+              ('c', None, None),
+              ('zz', None, None)))
+
+for label in iterate(tree):
+    print label
+Output: b, a, q, z, c, zz
+\end{lstlisting}
+
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Piping generators}
+\begin{lstlisting}[language=python]
+def grep(lines, word):
+    for line in lines:
+        if word in line:
+            yield line
+
+f = open('passwd')
+lines = grep(f, 'foo')
+lines = grep(lines, 'bar')
+for line in lines:
+    print line
+f.close()
+
+# Equivalent: cat some_file | grep foo | grep bar
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Piping generators}
+\begin{lstlisting}[language=python]
+def grep(lines, word):
+    for line in lines:
+        if word in line:
+            yield line
+
+f = open('passwd')
+try:
+    lines = grep(f, 'foo')
+    lines = grep(lines, 'bar')
+    for line in lines:
+        print line
+finally:
+    f.close()
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Piping generators}
+\begin{lstlisting}[language=python]
+def grep(lines, word):
+    for line in lines:
+        if word in line:
+            yield line
+
+for ln in grep(grep(open('passwd'), 'foo'), 'bar'):
+    print ln
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{List comprehensions}
+\begin{lstlisting}[language=python]
+nums = [1, 2, 3, 4, 5]
+times_two = [x * 2 for x in nums]
+print times_two
+# Outputs:  [2, 4, 6, 8, 10]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{List comprehensions}
+\begin{lstlisting}[language=python]
+nums = [1, 2, 3, 4, 5]
+times_two = [x * 2 for x in nums if x % 2 == 0]
+print times_two
+# Outputs:  [4, 8]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{List comprehensions}
+\begin{lstlisting}[language=python]
+sentences = ['mama are mere', 'tata are pere']
+words = []
+for s in sentences:
+    for w in words:
+        words.append(w.upper())
+
+print words
+
+\end{lstlisting}
+\end{frame}
+
+\end{document}
