@@ -617,9 +617,73 @@ for label in iterate(tree):
     print label
 Output: b, a, q, z, c, zz
 \end{lstlisting}
-
-
 \end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Iterative solution}
+\begin{lstlisting}[language=python]
+def iterator(bin_tree):
+    node_stack = [bin_tree]
+    while node_stack:
+        node = node_stack.pop()
+        if not node:
+            continue
+        label, left, right = node
+        yield label
+        node_stack.append(right)
+        node_stack.append(left)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Recursive solution}
+\begin{lstlisting}[language=python]
+def iterator(bin_tree):
+    if not bin_tree:
+        return
+    label, left, right = bin_tree
+    yield label
+    for label in iterator(left):
+        yield label
+    for label in iterator(right):
+        yield label
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Exercises pt. 2}
+\begin{enumerate}
+  \item write a generator that flattens a list that might have any level of nesting.
+\end{enumerate}
+Example:
+\begin{lstlisting}[language=python]
+for x in flatten([1, [2, 3], [[4, 5], 6, [[[7]]]):
+    print x
+
+Output: 1 2 3 4 5 6
+\vspace{5 mm}
+{\bf Hint}: use isinstance for checking if an object is a list or not
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Exercise soltion}
+\begin{lstlisting}[language=python]
+def flatten(lst):
+    for item in lst:
+        if isinstance(item, list):
+            for sub_item in flatten(item):
+                yield sub_item
+        else:
+            yield item
+
+\end{lstlisting}
+\end{lstlisting}
+\end{frame}
+
+
+
 
 \begin{frame}[fragile]
 \frametitle{Piping generators}
@@ -638,7 +702,6 @@ f.close()
 
 # Equivalent: cat some_file | grep foo | grep bar
 \end{lstlisting}
-
 \end{frame}
 
 \begin{frame}[fragile]
@@ -697,6 +760,14 @@ print times_two
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Exercise}
+\begin{itemize}
+  \item write a list comprehension statement that excludes strings longer than 5 characters
+    and makes the shorter ones uppercase
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
 \frametitle{List comprehensions}
 \begin{lstlisting}[language=python]
 sentences = ['mama are mere', 'tata are pere']
@@ -727,4 +798,214 @@ print words
 \end{frame}
 
 
+\begin{frame}[fragile]
+\frametitle{Exercises}
+\begin{itemize}
+  \item Write a list comprehension statement that flattens a list of lists but
+    skips nested lists that have a single element
+\end{itemize}
+
+\begin{lstlisting}[language=python]
+Example:
+
+[[1, 2], [3], [4, 5]] should be transformed to [1, 2, 4, 5]
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{List comprehensions}
+List comprehensions can be used for building generators as well
+\begin{lstlisting}[language=python]
+sentences = ['mama are mere', 'tata are pere']
+
+words = (w.upper() for sentence in sentences
+                   for w in sentence.split())
+
+for word in words:
+    print words
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{In-place list processing}
+\begin{lstlisting}[language=python]
+numbers = [1, 2, 3, 4, 5]
+numbers[:] = [x * x for x in numbers if x % 2 == 0]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Using list comprehensions for initializing container objects}
+\begin{lstlisting}[language=python]
+words = ['foo', 'bar', 'baz']
+d = dict((w, ''.join(sorted(w)))
+         for w in words if w.startswith('b'))
+
+print d  # Outputs: {'bar': 'abr', 'baz': 'abz'}
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Lambdas}
+\begin{itemize}
+  \item lambdas are anonymous functions
+  \item can have a single expression
+  \item usefull for short callbacks
+\end{itemize}
+\begin{lstlisting}[language=python]
+lambda x, y: x + y
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Using lambdas with filter}
+\begin{lstlisting}[language=python]
+numbers = [-7, 3, 4, -8, 9]
+
+positive_nums = [x for x in numbers if x >= 0]
+# is the equivalent of
+positive_nums = filter(lambda x: x >= 0, numbers)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Using lambdas with map}
+\begin{lstlisting}[language=python]
+numbers = [-7, 3, 4, -8, 9]
+
+squares = [x * x for x in numbers]
+# is the equivalent of
+squares = map(lambda x: x * x, numbers)
+
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Using lambdas with reduce}
+\begin{lstlisting}[language=python]
+numbers = [[1, 2], [3], [4, 5]]
+
+flattened = [x for nested in numbers for x in nested]
+# is the equivalent of
+squares = reduce(lambda x, y: x + y, numbers)
+
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Exercise}
+
+Write a function that takes a list of words. For each word:
+\begin{itemize}
+   \item if is longer that 5 chars, remove the consonants
+   \item if is shorter(or equal) then 5 chars, remove the vowels
+\end{itemize}
+
+Order the resulting names alphabetically, and then return the concatenated string.
+\vspace{10 mm}
+Try to be as 'functional' as possible. Bonus points for doing it all in a single expression :).
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Solution}
+Write a filter that takes a word and:\
+\begin{itemize}
+   \item if is longer that 5 chars, remove the consonants
+   \item if is shorter(or equal) then 5 chars, remove the vowels
+\end{itemize}
+
+\begin{lstlisting}[language=python]
+vowels = ['a', 'e', 'i', 'o', 'u']
+
+word = 'anamaria'
+filter(lambda c: (len(word)>5)^(c not in vowels),
+       word)
+# Outputs: aaaia
+
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Solution}
+Write a filter that takes a word and:\
+\begin{itemize}
+   \item if is longer that 5 chars, remove the consonants
+   \item if is shorter(or equal) then 5 chars, remove the vowels
+\end{itemize}
+
+\begin{lstlisting}[language=python]
+vowels = ['a', 'e', 'i', 'o', 'u']
+
+word = 'asfe'
+filter(lambda c: (len(word)>5)^(c not in vowels),
+       word)
+# Outputs: sf
+
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Solution}
+Write a map that takes a list of words. For each word:
+\begin{itemize}
+   \item if is longer that 5 chars, remove the consonants
+   \item if is shorter(or equal) then 5 chars, remove the vowels
+\end{itemize}
+\begin{lstlisting}[language=python]
+vowels = ['a', 'e', 'i', 'o', 'u']
+list_of_words = ['asfe', 'anamaria']
+
+map(
+  lambda w: filter(
+    lambda c: (len(word)>5)^(c not in vowels), w),
+  list_of_words)
+
+# Outputs: ['sf', 'aaaia']
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Solution}
+Now we sort the result of the previous map
+
+\begin{lstlisting}[language=python]
+vowels = ['a', 'e', 'i', 'o', 'u']
+list_of_words = ['anamaria', 'asfe']
+
+sorted(map(
+  lambda w: filter(
+    lambda c: (len(w) > 5) ^ (c not in vowels), w),
+  list_of_words))
+
+# Outputs: ['aaaia', 'sf']
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Final Solution}
+\begin{lstlisting}[language=python]
+vowels = ['a', 'e', 'i', 'o', 'u']
+list_of_words = ['anamaria', 'asfe']
+
+reduce(
+  lambda x, y: x + y,
+  sorted(map(
+    lambda w: filter(
+      lambda c: (len(w) > 5) ^ (c not in vowels), w),
+    list_of_words)))
+
+# Outputs: 'aaaiasf'
+
+\end{lstlisting}
+\end{frame}
+
+
 \end{document}
+
