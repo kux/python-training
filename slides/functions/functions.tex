@@ -97,7 +97,7 @@ print a  # Outputs: [2, 3, 4]
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Evaluation Stragegy}
+\frametitle{Evaluation Strategy}
 
 Functions that mutate their input arguments are:
 
@@ -126,7 +126,7 @@ Functions that mutate their input arguments are:
 \frametitle{Exercises}
 
 \begin{enumerate}
-  \item write a function that takes a list of integers and returns the number of even numbers containd in the list
+  \item write a function that takes a list of integers and returns the number of even numbers contained in the list
   \item write a function that takes a list of integers and returns a new list containing the even numbers from the list
   \item write a function that takes a list of integers and {\bf in-place} removes the odd elements
 \end{enumerate}
@@ -203,9 +203,11 @@ increment(a, 2)  # returns: 6
   \item default parameter values are are assigned at function definition and never change
 \end{itemize}
 
+\pause
+
 \begin{lstlisting}[language=python]
 default = 1
-def foo(x=defualt)
+def foo(x=default)
     print x
 
 default = 2
@@ -374,16 +376,79 @@ def page(url):
         return urlopen(url).read()
     return get
 
-python = page('http://python.org')
-jython = page('http://jython.org')
+get_python = page('http://python.org')
+get_jython = page('http://jython.org')
 
-pydata = python()  # Fetches http://python.org
-jydata = jython()  # Fetches http://jython.org
+pydata = get_python()  # Fetches http://python.org
+jydata = get_jython()  # Fetches http://jython.org
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Closure}
+Closure can be used for preserving state across function calls.
+
+\vspace{5 mm}
+\begin{lstlisting}[language=python]
+def counter(initial_value):
+    counter = initial_value
+    def inc():
+        counter += 1
+        return counter
+    def dec():
+        counter -= 1
+        return counter
+    return inc, dec
+
+inc, dec = counter(10)
+inc()  # Returns: 11
+inc()  # Returns: 12
+dec()  # Returns: 11
 \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{High order function example}
+\frametitle{Alternative implementation}
+The classic way of implementing the previous example
+would have been by using a class
+
+\vspace{5 mm}
+\begin{lstlisting}[language=python]
+class Counter(object):
+
+    def __init__(self, initial_value):
+        self.counter = initial_value
+
+    def inc(self):
+        self.counter += 1
+        return self.counter
+
+    def dec(self):
+        self.counter -= 1
+        return self.counter
+
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Exercise}
+Implement a stack using closures.
+\vspace{5 mm}
+\begin{lstlisting}[language=python]
+push, pop = stack()
+
+push(1)
+push(3)
+pop()    # Returns: 3
+push(4)
+pop()    # Returns: 4
+pop()    # Returns: 1
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{High order functions}
 High order functions are functions that do at least one of
 \begin{itemize}
   \item take one or more functions as input
@@ -478,18 +543,46 @@ print foo('bar')
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Exercise}
-Write a 'timing' decorator that wrapps a function and prints how long the function's execution takes
+\frametitle{Decorators exercise 1}
+Write a 'timing' decorator that wraps a function and prints how long the function's execution takes
 
 \vspace{15 mm}
-{\bf Hint}: use the Timer class from the timeit module:
+{\bf Hint}: use the {\bf time} module
+\vspace{5 mm}
 \begin{lstlisting}[language=python]
-import timeit
-t = timeit.Timer()
+import time
+
+started_at = time.time()
 # do stuff
-logging.info(t.timeit())
+print time.time() - started_at
 \end{lstlisting}
 \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Decorators exercise 2}
+
+Write a decorator that keeps track of how many times decorated functions are being called
+
+\vspace{5 mm}
+
+\begin{lstlisting}[language=python]
+@count_calls
+def foo():
+    print 'booo'
+
+@count_calls
+def bar():
+    print 'boohoo yourself'
+
+foo()
+bar()
+foo()
+get_call_count(foo)  # Returns: 2
+get_call_count(bar)  # Returns: 1
+\end{lstlisting}
+
+\end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{Generators}
@@ -597,8 +690,8 @@ random_gen.close()
 \begin{frame}[fragile]
 \frametitle{Exercises}
 \begin{enumerate}
-  \item Write a generator that takes an integer parameter and yields fibonacci numbers
-    smaller than the given argument.
+  \item Write a generator that takes an integer parameter and yields Fibonacci numbers
+    smaller than the given parameter.
   \item Having a binary tree encoded as a tuple (label, left, right) write a generator that
     yields the labels in pre-order (root, left, right). Write both an iterative and recursive
     implementation.
@@ -662,13 +755,13 @@ for x in flatten([1, [2, 3], [[4, 5], 6, [[[7]]]):
     print x
 
 Output: 1 2 3 4 5 6
+\end{lstlisting}
 \vspace{5 mm}
 {\bf Hint}: use isinstance for checking if an object is a list or not
-\end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Exercise soltion}
+\frametitle{Exercise solution}
 \begin{lstlisting}[language=python]
 def flatten(lst):
     for item in lst:
@@ -678,7 +771,6 @@ def flatten(lst):
         else:
             yield item
 
-\end{lstlisting}
 \end{lstlisting}
 \end{frame}
 
@@ -693,7 +785,7 @@ def grep(lines, word):
         if word in line:
             yield line
 
-f = open('passwd')
+f = open('/etc/passwd')
 lines = grep(f, 'foo')
 lines = grep(lines, 'bar')
 for line in lines:
@@ -712,7 +804,7 @@ def grep(lines, word):
         if word in line:
             yield line
 
-f = open('passwd')
+f = open('/etc/passwd')
 try:
     lines = grep(f, 'foo')
     lines = grep(lines, 'bar')
@@ -722,6 +814,24 @@ finally:
     f.close()
 \end{lstlisting}
 \end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Piping generators}
+\begin{lstlisting}[language=python]
+def grep(lines, word):
+    for line in lines:
+        if word in line:
+            yield line
+
+with open('/etc/passwd') as f:
+    lines = grep(f, 'foo')
+    lines = grep(lines, 'bar')
+    for line in lines:
+        print line
+\end{lstlisting}
+\end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{Piping generators}
@@ -762,7 +872,8 @@ print times_two
 \begin{frame}[fragile]
 \frametitle{Exercise}
 \begin{itemize}
-  \item write a list comprehension statement that excludes strings longer than 5 characters
+  \item write a list comprehension statement that given a list of string 
+    excludes the ones longer than 5 characters
     and makes the shorter ones uppercase
 \end{itemize}
 \end{frame}
@@ -808,7 +919,8 @@ print words
 \begin{lstlisting}[language=python]
 Example:
 
-[[1, 2], [3], [4, 5]] should be transformed to [1, 2, 4, 5]
+[[1, 2], [3], [4, 5]] should be
+transformed to [1, 2, 4, 5]
 \end{lstlisting}
 \end{frame}
 
@@ -833,17 +945,19 @@ for word in words:
 \begin{lstlisting}[language=python]
 numbers = [1, 2, 3, 4, 5]
 numbers[:] = [x * x for x in numbers if x % 2 == 0]
+
+print numbers
+# Outputs:  [4, 16]
 \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Using list comprehensions for initializing container objects}
 \begin{lstlisting}[language=python]
-words = ['foo', 'bar', 'baz']
-d = dict((w, ''.join(sorted(w)))
-         for w in words if w.startswith('b'))
+words = ['foo', 'barbaz', 'oups']
+d = dict((w, len(w)) for w in words)
 
-print d  # Outputs: {'bar': 'abr', 'baz': 'abz'}
+print d  # Outputs: {'foo: 3, 'barbaz': 6, 'oups': 4}
 \end{lstlisting}
 \end{frame}
 
@@ -853,7 +967,7 @@ print d  # Outputs: {'bar': 'abr', 'baz': 'abz'}
 \begin{itemize}
   \item lambdas are anonymous functions
   \item can have a single expression
-  \item usefull for short callbacks
+  \item use-full for short callbacks
 \end{itemize}
 \begin{lstlisting}[language=python]
 lambda x, y: x + y
@@ -867,6 +981,7 @@ lambda x, y: x + y
 numbers = [-7, 3, 4, -8, 9]
 
 positive_nums = [x for x in numbers if x >= 0]
+
 # is the equivalent of
 positive_nums = filter(lambda x: x >= 0, numbers)
 \end{lstlisting}
@@ -878,6 +993,7 @@ positive_nums = filter(lambda x: x >= 0, numbers)
 numbers = [-7, 3, 4, -8, 9]
 
 squares = [x * x for x in numbers]
+
 # is the equivalent of
 squares = map(lambda x: x * x, numbers)
 
@@ -887,11 +1003,10 @@ squares = map(lambda x: x * x, numbers)
 \begin{frame}[fragile]
 \frametitle{Using lambdas with reduce}
 \begin{lstlisting}[language=python]
-numbers = [[1, 2], [3], [4, 5]]
+numbers = [1, 2, 3, 4]
 
-flattened = [x for nested in numbers for x in nested]
-# is the equivalent of
-squares = reduce(lambda x, y: x + y, numbers)
+print reduce(lambda x, y: x + y, numbers)
+# Outputs: 10
 
 \end{lstlisting}
 \end{frame}
@@ -902,13 +1017,14 @@ squares = reduce(lambda x, y: x + y, numbers)
 
 Write a function that takes a list of words. For each word:
 \begin{itemize}
-   \item if is longer that 5 chars, remove the consonants
-   \item if is shorter(or equal) then 5 chars, remove the vowels
+   \item if is shorter then 5 chars, remove the vowels
+   \item if is longer or equal to 5 chars, remove the consonants
 \end{itemize}
 
 Order the resulting names alphabetically, and then return the concatenated string.
+
 \vspace{10 mm}
-Try to be as 'functional' as possible. Bonus points for doing it all in a single expression :).
+Try to be as 'functional' as possible.
 
 \end{frame}
 
@@ -916,16 +1032,16 @@ Try to be as 'functional' as possible. Bonus points for doing it all in a single
 \frametitle{Solution}
 Write a filter that takes a word and:\
 \begin{itemize}
-   \item if is longer that 5 chars, remove the consonants
-   \item if is shorter(or equal) then 5 chars, remove the vowels
+   \item if is shorter then 5 chars, remove the vowels
+   \item if is longer or equal to 5 chars, remove the consonants
 \end{itemize}
 
 \begin{lstlisting}[language=python]
 vowels = ['a', 'e', 'i', 'o', 'u']
 
-word = 'anamaria'
-filter(lambda c: (len(word)>5)^(c not in vowels),
-       word)
+w = 'anamaria'
+
+filter(lambda c: (len(w)<5)^(c in vowels), w)
 # Outputs: aaaia
 
 \end{lstlisting}
@@ -935,16 +1051,16 @@ filter(lambda c: (len(word)>5)^(c not in vowels),
 \frametitle{Solution}
 Write a filter that takes a word and:\
 \begin{itemize}
-   \item if is longer that 5 chars, remove the consonants
-   \item if is shorter(or equal) then 5 chars, remove the vowels
+   \item if is shorter then 5 chars, remove the vowels
+   \item if is longer or equal to 5 chars, remove the consonants
 \end{itemize}
 
 \begin{lstlisting}[language=python]
 vowels = ['a', 'e', 'i', 'o', 'u']
 
-word = 'asfe'
-filter(lambda c: (len(word)>5)^(c not in vowels),
-       word)
+w = 'asfe'
+
+filter(lambda c: (len(w)<5)^(c in vowels), w)
 # Outputs: sf
 
 \end{lstlisting}
@@ -954,8 +1070,8 @@ filter(lambda c: (len(word)>5)^(c not in vowels),
 \frametitle{Solution}
 Write a map that takes a list of words. For each word:
 \begin{itemize}
-   \item if is longer that 5 chars, remove the consonants
-   \item if is shorter(or equal) then 5 chars, remove the vowels
+   \item if is shorter then 5 chars, remove the vowels
+   \item if is longer or equal to 5 chars, remove the consonants
 \end{itemize}
 \begin{lstlisting}[language=python]
 vowels = ['a', 'e', 'i', 'o', 'u']
@@ -963,7 +1079,7 @@ list_of_words = ['asfe', 'anamaria']
 
 map(
   lambda w: filter(
-    lambda c: (len(word)>5)^(c not in vowels), w),
+    lambda c: (len(word)<5)^(c in vowels), w),
   list_of_words)
 
 # Outputs: ['sf', 'aaaia']
@@ -981,7 +1097,7 @@ list_of_words = ['anamaria', 'asfe']
 
 sorted(map(
   lambda w: filter(
-    lambda c: (len(w) > 5) ^ (c not in vowels), w),
+    lambda c: (len(w)<5)^(c in vowels), w),
   list_of_words))
 
 # Outputs: ['aaaia', 'sf']
@@ -998,14 +1114,13 @@ reduce(
   lambda x, y: x + y,
   sorted(map(
     lambda w: filter(
-      lambda c: (len(w) > 5) ^ (c not in vowels), w),
+      lambda c:(len(w)<5)^(c in vowels), w),
     list_of_words)))
 
 # Outputs: 'aaaiasf'
 
 \end{lstlisting}
 \end{frame}
-
 
 \end{document}
 
