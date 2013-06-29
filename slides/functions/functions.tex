@@ -387,16 +387,18 @@ jydata = get_jython()  # Fetches http://jython.org
 
 \begin{frame}[fragile]
 \frametitle{Closure}
-Closure can be used for preserving state across function calls.
+Closure can be used for preserving state across function calls. Note: this only works in python 3 by using the {\bf nonlocal} keyword.
 
 \vspace{5 mm}
 \begin{lstlisting}[language=python]
 def counter(initial_value):
     counter = initial_value
     def inc():
+        nonlocal counter
         counter += 1
         return counter
     def dec():
+        nonlocal counter
         counter -= 1
         return counter
     return inc, dec
@@ -407,6 +409,32 @@ inc()  # Returns: 12
 dec()  # Returns: 11
 \end{lstlisting}
 \end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Closure}
+In python 2.7, if you want to re-assign a variable from the nesting function,
+you have to wrap that in a list.
+\vspace{5 mm}
+\begin{lstlisting}[language=python]
+def counter(initial_value):
+    counter = [initial_value]
+    def inc():
+        counter[0] += 1
+        return counter[0]
+    def dec():
+        counter[0] -= 1
+        return counter[0]
+    return inc, dec
+
+inc, dec = counter(10)
+print inc()  # Returns: 11
+print inc()  # Returns: 12
+print dec()  # Returns: 11
+
+\end{lstlisting}
+\end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{Alternative implementation}
@@ -447,6 +475,29 @@ pop()    # Returns: 4
 pop()    # Returns: 1
 \end{lstlisting}
 \end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Solution}
+\vspace{5 mm}
+\begin{lstlisting}[language=python]
+def stack():
+    s = []
+    def push(value):
+        s.append(value)
+    def pop():
+        return s.pop()
+    return push, pop
+
+push, pop = stack()
+push(1)
+push(2)
+print pop()
+print pop()
+
+\end{lstlisting}
+\end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{High order functions}
