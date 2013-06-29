@@ -416,7 +416,6 @@ would have been by using a class
 \vspace{5 mm}
 \begin{lstlisting}[language=python]
 class Counter(object):
-
     def __init__(self, initial_value):
         self.counter = initial_value
 
@@ -428,6 +427,8 @@ class Counter(object):
         self.counter -= 1
         return self.counter
 
+counter = Counter(10)
+counter.inc()  # Returns: 11
 \end{lstlisting}
 \end{frame}
 
